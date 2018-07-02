@@ -17,7 +17,7 @@ public class CoordinatesTransformer {
 	double yWidthFactor = (double)500/180;
 	
 	// multiplying x and y-values with screen resolution factor and saving it in a double array containing the two values
-	//the array is returned as a result-parameter and will be used in the class PointVisualizer.java
+	//the array is returned as a result-parameter and will be used in the class PointVisualizer.java//Hello Kitty
 	double[] resultCoordinates ={ xValue * xWidthFactor, yValue * yWidthFactor};
 
 	return resultCoordinates;
