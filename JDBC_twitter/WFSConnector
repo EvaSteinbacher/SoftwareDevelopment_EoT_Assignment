@@ -1,0 +1,85 @@
+package eotpackage;
+
+import org.geotools.data.wfs.WFSDataStoreFactory;
+import org.opengis.feature.Feature;
+import org.opengis.feature.simple.SimpleFeature;
+
+
+
+import java.util.Map;
+import java.io.IOException;
+import java.util.HashMap;
+
+import org.geotools.data.DataStore;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.wfs.WFSDataStore;
+import org.geotools.data.store.ContentDataStore;
+
+
+//nur gt-epsg-hsql + gt-wfs-ng + gt-wms reinladen + gt-epsg-posgresql
+
+public class WFSConnector {
+
+	public static void WFSGetter () {
+		// TODO Auto-generated method stub
+		
+		String wfsGetCapabilitiesURL= "http://zgis221.geo.sbg.ac.at/geoserver/lv856152_153/ows/wfs?service=wfs&version=1.1.0&request=GetCapabilities";
+		HashMap connectionParameters = new HashMap();
+		connectionParameters.put(WFSDataStoreFactory.URL.key, wfsGetCapabilitiesURL );
+		connectionParameters.put(WFSDataStoreFactory.TIMEOUT.key, 100000);
+	
+		WFSDataStoreFactory dsf = new WFSDataStoreFactory();	//create the DataStoreFactory
+
+		try {
+			WFSDataStore ds = dsf.createDataStore(connectionParameters);
+			
+	
+		
+		
+	    
+			//SimpleFeatureSource source = ds.getFeatureSource("ogdsbg:verkehrszeichen");
+			SimpleFeatureSource source = ds.getFeatureSource("lv856152_153:physioMeasurements03");
+		    SimpleFeatureCollection fc = source.getFeatures();
+		    SimpleFeatureIterator iterator = fc.features();
+		    System.out.println();
+		 
+		    
+		    	while(iterator.hasNext()){
+		        Feature sf = iterator.next();
+		        
+//		        String hr = sf.getProperty("heartrate").getValue().toString();
+		        String the_geom = sf.getProperty("the_geom").getValue().toString();
+		        String ohnePoint = the_geom.substring(7,the_geom.length()-1);
+		        
+		        String[] split = ohnePoint.split(" ");
+	        	double coordinatesLat = Double.parseDouble(split[0]);
+	        	double coordinatesLon = Double.parseDouble(split[1]);	
+		        
+	
+	        			
+	        	
+
+	        	
+	        	double[] transformedCoordinates = CoordinatesTransformer.transformCoordinates(coordinatesLon, coordinatesLat);
+	        	
+	        	float x = (float) transformedCoordinates[0];
+	            float y = (float) transformedCoordinates[1];
+	            
+
+	        	
+	        	System.out.println("T: " + transformedCoordinates[0] + ", " + transformedCoordinates[1] + "\n");
+		        PointVisualiser.setup(x, y); // change setup() to static, nicht möglich weil des processing nicht mit static geht
+		        
+	
+		    }
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+	}
+
+
+
+}
